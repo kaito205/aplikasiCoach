@@ -33,6 +33,13 @@
                         required>
                 </div>
 
+                <div class="mb-4">
+                    <label class="block font-medium">Jam Pengingat Harian (Opsional)</label>
+                    <input type="time" name="reminder_time"
+                        class="w-full border rounded px-3 py-2">
+                    <p class="text-xs text-gray-500 mt-1">Notifikasi akan muncul di perangkat pada jam ini.</p>
+                </div>
+
                 <div class="flex justify-end gap-2">
                     <a href="{{ route('dashboard') }}"
                         class="px-4 py-2 border rounded">

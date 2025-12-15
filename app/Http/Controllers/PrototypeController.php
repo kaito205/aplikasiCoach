@@ -18,6 +18,7 @@ class PrototypeController extends Controller
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
             'start_date' => 'required|date',
+            'reminder_time' => 'nullable|date_format:H:i',
         ]);
 
         Prototype::create([
@@ -25,6 +26,7 @@ class PrototypeController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'start_date' => $request->start_date,
+            'reminder_time' => $request->reminder_time,
             'status' => 'active',
         ]);
 

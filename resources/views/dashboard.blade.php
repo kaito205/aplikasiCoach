@@ -8,7 +8,12 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <h3 class="text-white font-bold mb-4">🔥 Prototipe Aktif</h3>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-white font-bold">🔥 Prototipe Aktif</h3>
+                <button onclick="requestNotificationPermission()" id="btn-notify" class="text-xs bg-gray-700 text-gray-300 px-3 py-1 rounded hover:bg-gray-600">
+                    🔔 Aktifkan Pengingat
+                </button>
+            </div>
 
             <div class="text-white grid grid-cols-1 md:grid-cols-3 gap-4">
                 @forelse ($prototypes as $prototype)
@@ -52,9 +57,12 @@
                             <input type="hidden" name="prototype_id" value="{{ $prototype->id }}">
 
                             {{-- Input Kuantitatif (Optional) --}}
-                            <div class="mb-2">
-                                <input type="number" name="quantity" placeholder="Jml (Opsional)" 
-                                    class="w-full text-center bg-gray-700 border-none rounded text-white text-sm placeholder-gray-500 focus:ring-1 focus:ring-blue-500 py-1">
+                            <div class="mb-3">
+                                <label class="block text-xs text-gray-300 text-left mb-1 ml-1">
+                                    Input Tambahan (Contoh: 30 menit / 5 km)
+                                </label>
+                                <input type="number" name="quantity" placeholder="0" 
+                                    class="w-full text-center bg-gray-900 border border-gray-600 rounded-md text-white text-lg font-bold placeholder-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent py-2">
                             </div>
 
                             <div class="flex justify-center gap-2">
@@ -117,4 +125,67 @@
 
         </div>
     </div>
+    
+    <script>
+        // Data Prototipe dari Controller
+        @php
+            $jsData = $prototypes->map(fn($p) => [
+                'id' => $p->id, 
+                'name' => $p->name, 
+                'reminder_time' => $p->reminder_time ? substr($p->reminder_time, 0, 5) : null
+            ])->values();
+        @endphp
+        const prototypes = {!! json_encode($jsData) !!};
+
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                alert("Browser ini tidak mendukung notifikasi desktop.");
+                return;
+            }
+
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    alert("Notifikasi diaktifkan! Anda akan diingatkan sesuai jam prototipe.");
+                    document.getElementById('btn-notify').style.display = 'none';
+                    startReminderCheck(); // Mulai cek langsung
+                }
+            });
+        }
+
+        function startReminderCheck() {
+            // Cek setiap 1 menit (60.000 ms)
+            setInterval(() => {
+                const now = new Date();
+                const currentHours = String(now.getHours()).padStart(2, '0');
+                const currentMinutes = String(now.getMinutes()).padStart(2, '0');
+                const currentTime = `${currentHours}:${currentMinutes}`;
+                
+                console.log("Checking reminders for:", currentTime);
+
+                prototypes.forEach(p => {
+                    if (p.reminder_time === currentTime) {
+                        showNotification(p.name);
+                    }
+                });
+            }, 60000); 
+        }
+        
+        function showNotification(prototypeName) {
+            const notification = new Notification("Waktunya Check-in! ⏰", {
+                body: `Jangan lupa update progres untuk prototipe: ${prototypeName}`,
+                icon: "{{ asset('assets/img/logo.webp') }}"
+            });
+            
+            notification.onclick = function() {
+                window.focus();
+                this.close();
+            };
+        }
+
+        // Cek status izin saat load
+        if (Notification.permission === "granted") {
+             document.getElementById('btn-notify').style.display = 'none';
+             startReminderCheck();
+        }
+    </script>
 </x-app-layout>

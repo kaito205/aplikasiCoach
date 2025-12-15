@@ -12,6 +12,7 @@ class Prototype extends Model
         'description',
         'start_date',
         'end_date',
+        'reminder_time',
         'status'
     ];
 
