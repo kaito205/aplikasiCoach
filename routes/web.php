@@ -21,6 +21,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/prototypes', [PrototypeController::class, 'store'])
         ->name('prototypes.store');
 
+    Route::delete('/prototypes/{prototype}', [PrototypeController::class, 'destroy'])
+        ->name('prototypes.destroy');
+
     Route::post('/daily-logs', [DailyLogController::class, 'store'])
         ->name('daily-logs.store');
 

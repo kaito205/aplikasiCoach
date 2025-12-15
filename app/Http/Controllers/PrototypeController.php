@@ -31,4 +31,17 @@ class PrototypeController extends Controller
         return redirect()->route('dashboard')
             ->with('success', 'Prototipe berhasil ditambahkan 🚀');
     }
+
+    public function destroy(Prototype $prototype)
+    {
+        // Pastikan user pemilik data
+        if ($prototype->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $prototype->delete();
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Prototipe berhasil dihapus 🗑️');
+    }
 }
