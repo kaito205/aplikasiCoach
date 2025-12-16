@@ -60,6 +60,9 @@ class DashboardController extends Controller
                     $status = $log->success ? 'success' : 'failed'; // Hijau / Merah
                 } elseif ($isFuture) {
                     $status = 'future'; // Masa depan (transparan/dashed)
+                } elseif (!$isToday) {
+                    // Jika hari sudah lewat dan belum check-in -> Dianggap Gagal (Otomatis)
+                    $status = 'failed'; 
                 }
 
                 $weekly_progress[] = [

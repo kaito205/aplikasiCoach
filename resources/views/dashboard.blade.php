@@ -1,38 +1,49 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white">
-            👋 Halo, Bro {{ Auth::user()->name }}
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-white">
+            Halo, {{ Auth::user()->name }}
         </h2>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            {{-- JAM REAL-TIME --}}
+            <div class="mb-6 text-center">
+                <p class="text-gray-500 dark:text-gray-400 text-sm uppercas tracking-widest">Waktu Sekarang</p>
+                <h2 id="realtime-clock" class="text-3xl font-mono font-bold text-gray-800 dark:text-white mt-1">
+                    --:--:--
+                </h2>
+                <p id="realtime-date" class="text-blue-400 font-medium mt-1">
+                    ...
+                </p>
+            </div>
+
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-white font-bold">🔥 Prototipe Aktif</h3>
-                <button onclick="requestNotificationPermission()" id="btn-notify" class="text-xs bg-gray-700 text-gray-300 px-3 py-1 rounded hover:bg-gray-600">
+                <h3 class="text-gray-800 dark:text-white font-bold">🔥 Prototipe Aktif</h3>
+                <button onclick="requestNotificationPermission()" id="btn-notify" class="text-xs bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600">
                     🔔 Aktifkan Pengingat
                 </button>
             </div>
 
-            <div class="text-white grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 @forelse ($prototypes as $prototype)
-                <div class="border rounded-lg p-4 text-center">
+                <div class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-4 text-center shadow-sm dark:shadow-none">
                     <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-semibold text-lg text-left">
+                        <h4 class="font-semibold text-lg text-left text-gray-800 dark:text-white">
                             {{ $prototype->name }}
                         </h4>
                         
                         <form method="POST" action="{{ route('prototypes.destroy', $prototype->id) }}" onsubmit="return confirm('Yakin hapus prototipe ini?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-400 hover:text-red-200 text-sm">
+                            <button type="submit" class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200 text-sm">
                                 🗑️ Hapus
                             </button>
                         </form>
                     </div>
 
-                    <p class="text-2xl font-bold mt-2">
+                    <p class="text-2xl font-bold mt-2 text-gray-800 dark:text-white">
                         {{ $prototype->success_rate }}%
                     </p>
 
@@ -58,11 +69,11 @@
 
                             {{-- Input Kuantitatif (Optional) --}}
                             <div class="mb-3">
-                                <label class="block text-xs text-gray-300 text-left mb-1 ml-1">
+                                <label class="block text-xs text-gray-500 dark:text-gray-300 text-left mb-1 ml-1">
                                     Input Tambahan (Contoh: 30 menit / 5 km)
                                 </label>
                                 <input type="number" name="quantity" placeholder="0" 
-                                    class="w-full text-center bg-gray-900 border border-gray-600 rounded-md text-white text-lg font-bold placeholder-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent py-2">
+                                    class="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-900 dark:border-gray-600 dark:text-white rounded-md text-lg font-bold placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent py-2">
                             </div>
 
                             <div class="flex justify-center gap-2">
@@ -187,5 +198,41 @@
              document.getElementById('btn-notify').style.display = 'none';
              startReminderCheck();
         }
+
+        // JAM REAL-TIME
+        let lastDateString = "";
+
+        function updateClock() {
+            const now = new Date();
+            
+            // Format Jam: 14:05:30
+            const timeString = now.toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false 
+            });
+
+            // Format Tanggal: Senin, 16 Desember 2025
+            const dateString = now.toLocaleDateString('id-ID', { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+
+            document.getElementById('realtime-clock').innerText = timeString;
+            document.getElementById('realtime-date').innerText = dateString;
+
+            // 🔄 Auto-Refresh saat ganti hari (Midnight Check)
+            if (lastDateString !== "" && lastDateString !== dateString) {
+                console.log("Hari berganti! Refreshing page...");
+                location.reload(); 
+            }
+            lastDateString = dateString;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock(); // Jalan pertama kali
     </script>
 </x-app-layout>
