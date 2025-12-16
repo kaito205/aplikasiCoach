@@ -67,15 +67,6 @@
                             @csrf
                             <input type="hidden" name="prototype_id" value="{{ $prototype->id }}">
 
-                            {{-- Input Kuantitatif (Optional) --}}
-                            <div class="mb-3">
-                                <label class="block text-xs text-gray-500 dark:text-gray-300 text-left mb-1 ml-1">
-                                    Input Tambahan (Contoh: 30 menit / 5 km)
-                                </label>
-                                <input type="number" name="quantity" placeholder="0" 
-                                    class="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-900 dark:border-gray-600 dark:text-white rounded-md text-lg font-bold placeholder-gray-400 dark:placeholder-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent py-2">
-                            </div>
-
                             <div class="flex justify-center gap-2">
                                 <button type="submit" name="success" value="1"
                                     class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition w-full">
@@ -137,6 +128,33 @@
         </div>
     </div>
     
+    {{-- OVERLAY PENGINGAT (ALA PANGGILAN) --}}
+    <div id="reminder-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-95 hidden z-50 flex flex-col items-center justify-center text-white">
+        <div class="animate-pulse mb-8">
+            <div class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(37,99,235,0.8)]">
+                <span class="text-4xl">⏰</span>
+            </div>
+        </div>
+        
+        <h2 class="text-3xl font-bold mb-2">Waktunya Check-in!</h2>
+        <p id="overlay-message" class="text-xl text-gray-300 mb-12">Prototipe: ???</p>
+
+        <div class="flex gap-6">
+            <button onclick="dismissReminder()" class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition transform hover:scale-110">
+                ✖
+            </button>
+            <a href="{{ route('dashboard') }}" onclick="dismissReminder()" class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700 transition transform hover:scale-110">
+                ✔
+            </a>
+        </div>
+         <p class="mt-4 text-sm text-gray-500">Abaikan / Buka Aplikasi</p>
+    </div>
+
+    {{-- AUDIO: Simple Classic Alarm Sound (Base64 for reliability) --}}
+    <audio id="alarm-sound" loop>
+        <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+    </audio>
+
     <script>
         // Data Prototipe dari Controller
         @php
@@ -156,15 +174,17 @@
 
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    alert("Notifikasi diaktifkan! Anda akan diingatkan sesuai jam prototipe.");
+                    alert("Notifikasi diaktifkan! Browser harus tetap terbuka agar alarm berbunyi.");
                     document.getElementById('btn-notify').style.display = 'none';
-                    startReminderCheck(); // Mulai cek langsung
+                    startReminderCheck(); // Mulai cek
+                    
+                    // Test sound (optional, to unlock audio context)
+                    // document.getElementById('alarm-sound').play().then(() => document.getElementById('alarm-sound').pause());
                 }
             });
         }
 
         function startReminderCheck() {
-            // Cek setiap 1 menit (60.000 ms)
             setInterval(() => {
                 const now = new Date();
                 const currentHours = String(now.getHours()).padStart(2, '0');
@@ -175,22 +195,44 @@
 
                 prototypes.forEach(p => {
                     if (p.reminder_time === currentTime) {
-                        showNotification(p.name);
+                        triggerAlarm(p.name);
                     }
                 });
-            }, 60000); 
+            }, 60000); // 1 menit
         }
         
-        function showNotification(prototypeName) {
-            const notification = new Notification("Waktunya Check-in! ⏰", {
-                body: `Jangan lupa update progres untuk prototipe: ${prototypeName}`,
-                icon: "{{ asset('assets/img/logo.webp') }}"
-            });
-            
-            notification.onclick = function() {
-                window.focus();
-                this.close();
-            };
+        function triggerAlarm(name) {
+            // 1. Tampilkan Overlay (Layar Penuh)
+            const overlay = document.getElementById('reminder-overlay');
+            document.getElementById('overlay-message').innerText = "Prototipe: " + name;
+            overlay.classList.remove('hidden');
+
+            // 2. Mainkan Suara
+            const audio = document.getElementById('alarm-sound');
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log("Audio play failed (user interaction needed first):", e));
+
+            // 3. Getar (Vibrate) - Pola seperti telepon berdering
+            if (navigator.vibrate) {
+                navigator.vibrate([1000, 500, 1000, 500, 1000]); // Getar 1d, diam 0.5d, ulang
+            }
+
+            // 4. Notifikasi Sistem (Cadangan jika tidak sedang buka tab)
+            if (document.hidden && Notification.permission === "granted") {
+                new Notification("📞 Waktunya Check-in: " + name, {
+                    body: "Klik untuk membuka aplikasi.",
+                    requireInteraction: true, // Tidak hilang sendiri
+                    tag: 'reminder',
+                    renotify: true
+                });
+            }
+        }
+
+        function dismissReminder() {
+            // Sembunyikan Overlay & Matikan Suara
+            document.getElementById('reminder-overlay').classList.add('hidden');
+            document.getElementById('alarm-sound').pause();
+            if (navigator.vibrate) navigator.vibrate(0); // Stop getar
         }
 
         // Cek status izin saat load

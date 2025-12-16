@@ -25,13 +25,26 @@ class DashboardController extends Controller
 
         foreach ($prototypes as $prototype) {
             // Hitung success rate berdasarkan hari yang sudah berlalu (termasuk hari ini)
-            // Agar persentase adil, pembaginya adalah jumlah hari yang sudah lewat di minggu ini, bukan selalu 7
-            $daysPassed = Carbon::now()->dayOfWeekIso; // 1 (Senin) - 7 (Minggu)
+            // Hanya hitung hari sejak Mulai Prototipe ATAU Senin minggu ini (mana yang lebih akhir)
+            $startOfWeek = Carbon::now()->startOfWeek();
+            $today = Carbon::today();
+            $protoStart = Carbon::parse($prototype->start_date)->startOfDay();
+
+            $validDays = 0;
+            $tempDate = $startOfWeek->copy();
+            
+            // Hitung pembagi (denominator) yang valid
+            while ($tempDate->lte($today)) {
+                if ($tempDate->gte($protoStart)) {
+                    $validDays++;
+                }
+                $tempDate->addDay();
+            }
+
             $successCount = $prototype->dailyLogs->where('success', true)->count();
             
-            // Hindari pembagian dengan 0 (walau jarang terjadi karena dayOfWeekIso minimal 1)
-            $prototype->success_rate = ($daysPassed > 0) 
-                ? round(($successCount / $daysPassed) * 100) 
+            $prototype->success_rate = ($validDays > 0) 
+                ? round(($successCount / $validDays) * 100) 
                 : 0;
 
             // Property untuk cek hari ini (seperti sebelumnya)
@@ -48,6 +61,7 @@ class DashboardController extends Controller
                 $dateStr = $currentDate->format('Y-m-d');
                 $isToday = $currentDate->isToday();
                 $isFuture = $currentDate->isFuture();
+                $isBeforeStart = $currentDate->lt($protoStart);
 
                 // Cari log untuk tanggal ini
                 $log = $prototype->dailyLogs->first(function ($l) use ($dateStr) {
@@ -58,6 +72,8 @@ class DashboardController extends Controller
                 
                 if ($log) {
                     $status = $log->success ? 'success' : 'failed'; // Hijau / Merah
+                } elseif ($isBeforeStart) {
+                    $status = 'none'; // Belum mulai (abu-abu biasa), jangan dianggap gagal
                 } elseif ($isFuture) {
                     $status = 'future'; // Masa depan (transparan/dashed)
                 } elseif (!$isToday) {
@@ -79,7 +95,7 @@ class DashboardController extends Controller
 
             // 3️⃣ Saran Analisis & Iterasi (Simple AI Logic)
             $prototype->suggestion = null;
-            if ($daysPassed >= 3) { // Hanya beri saran jika sudah berjalan minimal 3 hari
+            if ($validDays >= 3) { // Hanya beri saran jika sudah berjalan minimal 3 hari
                 if ($prototype->success_rate >= 80) {
                     $prototype->suggestion = [
                         'type' => 'upgrade',
