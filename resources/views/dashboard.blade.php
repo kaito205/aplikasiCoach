@@ -265,10 +265,12 @@
         }
         
         function triggerAlarm(name, isPrototype = true) {
-            // 1. Tampilkan Overlay (Layar Penuh)
-            const overlay = document.getElementById('reminder-overlay');
-            document.getElementById('overlay-message').innerText = isPrototype ? "Prototipe: " + name : name;
-            overlay.classList.remove('hidden');
+            // 1. Tampilkan Overlay (Hanya jika Reminder Prototipe / Check-in)
+            if (isPrototype) {
+                const overlay = document.getElementById('reminder-overlay');
+                document.getElementById('overlay-message').innerText = "Prototipe: " + name;
+                overlay.classList.remove('hidden');
+            }
 
             // 2. Mainkan Suara
             const audio = document.getElementById('alarm-sound');
@@ -280,16 +282,22 @@
                 navigator.vibrate([1000, 500, 1000, 500, 1000]); // Getar 1d, diam 0.5d, ulang
             }
 
-            // 4. Notifikasi Sistem (Cadangan jika tidak sedang buka tab)
-            if (document.hidden && Notification.permission === "granted") {
-                new Notification("📞 Waktunya Check-in: " + name, {
-                    body: "Klik untuk membuka aplikasi.",
-                    requireInteraction: true, // Tidak hilang sendiri
-                    tag: 'reminder',
-                    renotify: true
-                });
+            // 4. Notifikasi Sistem
+            // Jika Timer (bukan prototipe), SELALU kirim notifikasi sitem.
+            // Jika Prototipe, hanya kirim jika tab hidden (karena overlay sudah muncul).
+            if (Notification.permission === "granted") {
+                if (!isPrototype || document.hidden) {
+                    new Notification(isPrototype ? "📞 Waktunya Check-in: " + name : "⏰ Waktu Habis!", {
+                        body: isPrototype ? "Klik untuk membuka aplikasi." : name,
+                        requireInteraction: true, 
+                        tag: isPrototype ? 'reminder' : 'timer-done',
+                        renotify: true
+                    });
+                }
             }
         }
+
+
 
         function dismissReminder() {
             // Sembunyikan Overlay & Matikan Suara
