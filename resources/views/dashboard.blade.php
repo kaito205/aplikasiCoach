@@ -19,6 +19,48 @@
                 </p>
             </div>
 
+            {{-- TIMER BELAJAR / FOKUS --}}
+            <div class="mb-8 p-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg text-white text-center relative overflow-hidden ring-1 ring-white/20">
+                <!-- Decorative Elements -->
+                <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-xl"></div>
+                <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-black/10 blur-xl"></div>
+
+                <h3 class="font-bold text-lg uppercase tracking-wider mb-4 flex items-center justify-center gap-2">
+                    ⏱️ Mode Fokus
+                </h3>
+                
+                <!-- Timer Display -->
+                <div class="text-5xl md:text-6xl font-mono font-bold mb-6 tabular-nums tracking-tighter" id="timer-display">
+                    25:00
+                </div>
+
+                <!-- Controls -->
+                <div class="flex justify-center gap-4 mb-6 relative z-10">
+                    <button onclick="toggleTimer()" id="btn-start-pause" class="bg-white text-indigo-600 font-bold py-2 px-8 rounded-full hover:bg-gray-100 transition shadow-lg hover:shadow-xl active:scale-95 flex items-center gap-2">
+                        <span id="icon-play">▶</span> <span id="text-start-pause">Mulai</span>
+                    </button>
+                    <button onclick="resetTimer()" class="bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-4 rounded-full transition backdrop-blur-sm active:scale-95 border border-white/10">
+                        🔄 Reset
+                    </button>
+                </div>
+
+                <!-- Presets -->
+                <div class="flex justify-center gap-2 relative z-10 flex-wrap">
+                    <button onclick="setTimer(25)" class="px-4 py-1.5 bg-black/20 hover:bg-black/30 rounded-full text-sm transition border border-white/10 backdrop-blur-md">25 Menit</button>
+                    <button onclick="setTimer(5)" class="px-4 py-1.5 bg-black/20 hover:bg-black/30 rounded-full text-sm transition border border-white/10 backdrop-blur-md">5 Menit</button>
+                    <button onclick="setTimer(60)" class="px-4 py-1.5 bg-black/20 hover:bg-black/30 rounded-full text-sm transition border border-white/10 backdrop-blur-md">60 Menit</button>
+                </div>
+                
+                <!-- Custom Time -->
+                <div class="mt-4 flex justify-center items-center gap-2 relative z-10">
+                    <input type="number" id="custom-minutes" placeholder="Menit" min="1" max="180" 
+                        class="w-20 px-3 py-1 text-sm bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 text-center spin-hide">
+                    <button onclick="setCustomTimer()" class="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition border border-white/10 font-bold">
+                        Set Custom
+                    </button>
+                </div>
+            </div>
+
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-gray-800 dark:text-white font-bold">🔥 Prototipe Aktif</h3>
                 <button onclick="requestNotificationPermission()" id="btn-notify" class="text-xs bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600">
@@ -128,26 +170,47 @@
         </div>
     </div>
     
-    {{-- OVERLAY PENGINGAT (ALA PANGGILAN) --}}
-    <div id="reminder-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-95 hidden z-50 flex flex-col items-center justify-center text-white">
-        <div class="animate-pulse mb-8">
-            <div class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(37,99,235,0.8)]">
-                <span class="text-4xl">⏰</span>
+    {{-- OVERLAY PENGINGAT (ALA PANGGILAN MODERN) --}}
+    <div id="reminder-overlay" class="fixed inset-0 bg-gray-900/95 backdrop-blur-sm hidden z-50 flex flex-col items-center justify-between py-20 px-6 text-white transition-opacity duration-300">
+        
+        {{-- Top Section: Caller Info --}}
+        <div class="flex flex-col items-center text-center mt-10">
+            <div class="animate-bounce mb-6">
+                <div class="w-28 h-28 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(59,130,246,0.5)] border-4 border-gray-800">
+                    <span class="text-5xl">⏰</span>
+                </div>
+            </div>
+            <h2 class="text-xl font-medium tracking-wide text-gray-400 uppercase">Pengingat Masuk...</h2>
+            <h1 id="overlay-message" class="text-4xl md:text-5xl font-bold mt-4 leading-tight">???</h1>
+            <p class="mt-2 text-gray-300">Waktunya untuk check-in progress!</p>
+        </div>
+
+        {{-- Bottom Section: Actions --}}
+        <div class="w-full max-w-sm">
+            <div class="flex justify-between items-center w-full px-8">
+                
+                {{-- Decline Button --}}
+                <div class="flex flex-col items-center gap-2 group">
+                    <button onclick="dismissReminder()" class="w-16 h-16 bg-red-500/20 text-red-500 border-2 border-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all duration-300 transform group-hover:scale-110 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    <span class="text-sm font-medium text-gray-400 group-hover:text-red-400 transition-colors">Tutup</span>
+                </div>
+
+                {{-- Accept Button (Check-In) --}}
+                <div class="flex flex-col items-center gap-2 group">
+                    <a href="{{ route('dashboard') }}" onclick="dismissReminder()" class="relative w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white hover:bg-green-400 transition-all duration-300 transform group-hover:scale-110 shadow-[0_0_40px_rgba(34,197,94,0.6)] animate-pulse">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-10 h-10">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                    </a>
+                    <span class="text-sm font-medium text-gray-400 group-hover:text-green-400 transition-colors">Check-In</span>
+                </div>
+
             </div>
         </div>
-        
-        <h2 class="text-3xl font-bold mb-2">Waktunya Check-in!</h2>
-        <p id="overlay-message" class="text-xl text-gray-300 mb-12">Prototipe: ???</p>
-
-        <div class="flex gap-6">
-            <button onclick="dismissReminder()" class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition transform hover:scale-110">
-                ✖
-            </button>
-            <a href="{{ route('dashboard') }}" onclick="dismissReminder()" class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700 transition transform hover:scale-110">
-                ✔
-            </a>
-        </div>
-         <p class="mt-4 text-sm text-gray-500">Abaikan / Buka Aplikasi</p>
     </div>
 
     {{-- AUDIO: Simple Classic Alarm Sound (Base64 for reliability) --}}
@@ -201,10 +264,10 @@
             }, 60000); // 1 menit
         }
         
-        function triggerAlarm(name) {
+        function triggerAlarm(name, isPrototype = true) {
             // 1. Tampilkan Overlay (Layar Penuh)
             const overlay = document.getElementById('reminder-overlay');
-            document.getElementById('overlay-message').innerText = "Prototipe: " + name;
+            document.getElementById('overlay-message').innerText = isPrototype ? "Prototipe: " + name : name;
             overlay.classList.remove('hidden');
 
             // 2. Mainkan Suara
@@ -276,5 +339,110 @@
 
         setInterval(updateClock, 1000);
         updateClock(); // Jalan pertama kali
+
+        // --- TIMER FOKUS LOGIC ---
+        let timerInterval;
+        let currentDuration = 25 * 60; // Default 25 menit
+        let timeLeft = currentDuration; 
+        let isTimerRunning = false;
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = display;
+            
+            // Update Tab Title
+            if (isTimerRunning) {
+                document.title = `(${display}) Mode Fokus`;
+            } else {
+                document.title = "Prototype Coach";
+            }
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('btn-start-pause');
+            const icon = document.getElementById('icon-play');
+            const text = document.getElementById('text-start-pause');
+
+            if (isTimerRunning) {
+                // Pause
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                icon.innerText = "▶";
+                text.innerText = "Lanjut";
+                btn.classList.remove('bg-yellow-400', 'text-yellow-900');
+                btn.classList.add('bg-white', 'text-indigo-600');
+            } else {
+                // Start
+                if (timeLeft <= 0) return;
+                
+                isTimerRunning = true;
+                icon.innerText = "⏸";
+                text.innerText = "Jeda";
+                btn.classList.remove('bg-white', 'text-indigo-600');
+                btn.classList.add('bg-yellow-400', 'text-yellow-900');
+
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        // Timer Selesai
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        triggerAlarm("Waktu Fokus Selesai!", false);
+                        icon.innerText = "▶";
+                        text.innerText = "Mulai";
+                        btn.classList.remove('bg-yellow-400', 'text-yellow-900');
+                        btn.classList.add('bg-white', 'text-indigo-600');
+                        timeLeft = 0;
+                        updateTimerDisplay();
+                        document.title = "Waktu Habis!";
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timeLeft = currentDuration;
+            updateTimerDisplay();
+            
+            const btn = document.getElementById('btn-start-pause');
+            document.getElementById('icon-play').innerText = "▶";
+            document.getElementById('text-start-pause').innerText = "Mulai";
+            btn.classList.remove('bg-yellow-400', 'text-yellow-900');
+            btn.classList.add('bg-white', 'text-indigo-600');
+            document.title = "Prototype Coach";
+        }
+
+        function setTimer(minutes) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            currentDuration = minutes * 60;
+            timeLeft = currentDuration;
+            updateTimerDisplay();
+
+            const btn = document.getElementById('btn-start-pause');
+            document.getElementById('icon-play').innerText = "▶";
+            document.getElementById('text-start-pause').innerText = "Mulai";
+            btn.classList.remove('bg-yellow-400', 'text-yellow-900');
+            btn.classList.add('bg-white', 'text-indigo-600');
+            document.title = "Prototype Coach";
+        }
+
+        function setCustomTimer() {
+            const input = document.getElementById('custom-minutes');
+            const minutes = parseInt(input.value);
+            
+            if (minutes && minutes > 0) {
+                setTimer(minutes);
+                input.value = ""; 
+            } else {
+                alert("Masukkan jumlah menit yang valid!");
+            }
+        }
     </script>
 </x-app-layout>
