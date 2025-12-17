@@ -13,7 +13,14 @@ class Prototype extends Model
         'start_date',
         'end_date',
         'reminder_time',
-        'status'
+        'status',
+        'type',
+        'settings'
+    ];
+
+    protected $casts = [
+        'settings' => 'array',
+        'start_date' => 'date',
     ];
 
     public function dailyLogs()

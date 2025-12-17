@@ -1,6 +1,6 @@
 {
-    "name": "Prototype Coach",
-    "short_name": "ProtoCoach",
+    "name": "Flow",
+    "short_name": "Flow",
     "start_url": "/dashboard",
     "display": "standalone",
     "background_color": "#1f2937",

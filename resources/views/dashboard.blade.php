@@ -74,37 +74,119 @@
                     </p>
 
                     {{-- FORM CHECK-IN --}}
-                    {{-- STATUS CHECK-IN HARI INI --}}
-                    @if ($prototype->today_log)
-                        <div class="mt-3">
-                            @if ($prototype->today_log->success)
-                                <div class="px-3 py-2 bg-green-600/50 border border-green-500 text-green-100 rounded cursor-not-allowed">
-                                    ✅ Berhasil hari ini
+                    {{-- KARTU BERDASARKAN TIPE --}}
+                    @if ($prototype->type == 'sleep')
+                        {{-- KARTU TIDUR --}}
+                        <div class="mt-4 bg-purple-900/10 rounded-lg p-4 text-center border border-purple-100">
+                           <div class="text-4xl mb-2">😴</div>
+                           <p class="text-sm font-bold text-purple-800 dark:text-purple-300">Target Tidur</p>
+                           <h3 class="text-2xl font-bold font-mono text-purple-900 dark:text-purple-100">
+                               {{ $prototype->settings['target_time'] ?? '22:00' }}
+                           </h3>
+                           
+                           @if ($prototype->today_log)
+                                <div class="mt-3 px-3 py-2 bg-green-100 text-green-700 rounded text-sm font-bold border border-green-200">
+                                    ✅ Tercatat: {{ $prototype->today_log->created_at->format('H:i') }}
                                 </div>
-                            @else
-                                <div class="px-3 py-2 bg-red-600/50 border border-red-500 text-red-100 rounded cursor-not-allowed">
-                                    ❌ Gagal hari ini
-                                </div>
-                            @endif
+                           @else
+                                <form method="POST" action="{{ route('daily-logs.store') }}" class="mt-3">
+                                    @csrf
+                                    <input type="hidden" name="prototype_id" value="{{ $prototype->id }}">
+                                    <input type="hidden" name="success" value="1">
+                                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition transform active:scale-95">
+                                        🛌 Tidur Sekarang
+                                    </button>
+                                </form>
+                           @endif
                         </div>
+
+                    @elseif ($prototype->type == 'study')
+                         {{-- KARTU BELAJAR --}}
+                         <div class="mt-4 bg-indigo-900/10 rounded-lg p-4 text-center border border-indigo-100">
+                            <div class="text-4xl mb-2">📚</div>
+                            <p class="text-sm font-bold text-indigo-800 dark:text-indigo-300">Sesi Fokus</p>
+                            
+                            @if ($prototype->today_log)
+                                 <div class="mt-2 px-3 py-1 bg-green-100 text-green-700 rounded text-sm font-bold border border-green-200 inline-block mb-2">
+                                     ✅ Selesai Hari Ini
+                                 </div>
+                            @endif
+
+                             <a href="{{ route('focus') }}" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition transform active:scale-95 mt-2">
+                                 ⏱️ Mulai Fokus
+                             </a>
+                             
+                             @if (!$prototype->today_log)
+                                <form method="POST" action="{{ route('daily-logs.store') }}" class="mt-2">
+                                    @csrf
+                                    <input type="hidden" name="prototype_id" value="{{ $prototype->id }}">
+                                    <button type="submit" name="success" value="1" class="text-xs text-indigo-500 underline hover:text-indigo-700">
+                                        Check-in manual
+                                    </button>
+                                </form>
+                             @endif
+                         </div>
+
+                    @elseif ($prototype->type == 'checklist')
+                        {{-- KARTU CHECKLIST (misal: Makan 3x) --}}
+                         <div class="mt-4 bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-100 dark:border-green-800">
+                             <div class="flex justify-between items-center mb-2">
+                                 <div class="text-sm font-bold text-green-800 dark:text-green-300">Progress Harian</div>
+                                 <div class="text-xs bg-white dark:bg-gray-800 border px-2 py-1 rounded">
+                                     {{-- Simple count based on multiple logs could be implemented here, simplified for now --}}
+                                     {{ $prototype->today_log ? '1' : '0' }} / {{ $prototype->settings['target_count'] ?? 1 }}
+                                 </div>
+                             </div>
+                             
+                             @if ($prototype->today_log)
+                                  <div class="w-full bg-green-200 rounded-full h-2.5 dark:bg-green-700 mt-2">
+                                    <div class="bg-green-600 h-2.5 rounded-full" style="width: 100%"></div>
+                                  </div>
+                                  <div class="mt-2 text-center text-sm text-green-700 font-bold">Selesai! 🥙</div>
+                             @else
+                                <form method="POST" action="{{ route('daily-logs.store') }}" class="mt-2">
+                                    @csrf
+                                    <input type="hidden" name="prototype_id" value="{{ $prototype->id }}">
+                                    <button type="submit" name="success" value="1" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm">
+                                        ✅ Check (Selesai)
+                                    </button>
+                                </form>
+                             @endif
+                         </div>
+
                     @else
-                        {{-- FORM CHECK-IN --}}
-                        <form method="POST" action="{{ route('daily-logs.store') }}" class="mt-3">
-                            @csrf
-                            <input type="hidden" name="prototype_id" value="{{ $prototype->id }}">
-
-                            <div class="flex justify-center gap-2">
-                                <button type="submit" name="success" value="1"
-                                    class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition w-full">
-                                    ✔ Berhasil
-                                </button>
-
-                                <button type="submit" name="success" value="0"
-                                    class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition w-full">
-                                    ✖ Gagal
-                                </button>
+                        {{-- KARTU STANDARD (DEFAULT) --}} 
+                        @if ($prototype->today_log)
+                            <div class="mt-3">
+                                @if ($prototype->today_log->success)
+                                    <div class="px-3 py-2 bg-green-600/50 border border-green-500 text-green-100 rounded cursor-not-allowed">
+                                        ✅ Berhasil hari ini
+                                    </div>
+                                @else
+                                    <div class="px-3 py-2 bg-red-600/50 border border-red-500 text-red-100 rounded cursor-not-allowed">
+                                        ❌ Gagal hari ini
+                                    </div>
+                                @endif
                             </div>
-                        </form>
+                        @else
+                            {{-- FORM CHECK-IN --}}
+                            <form method="POST" action="{{ route('daily-logs.store') }}" class="mt-3">
+                                @csrf
+                                <input type="hidden" name="prototype_id" value="{{ $prototype->id }}">
+
+                                <div class="flex justify-center gap-2">
+                                    <button type="submit" name="success" value="1"
+                                        class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition w-full">
+                                        ✔ Berhasil
+                                    </button>
+
+                                    <button type="submit" name="success" value="0"
+                                        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition w-full">
+                                        ✖ Gagal
+                                    </button>
+                                </div>
+                            </form>
+                        @endif
                     @endif
 
                     {{-- SARAN ITERASI --}}

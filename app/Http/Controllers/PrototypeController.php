@@ -27,6 +27,8 @@ class PrototypeController extends Controller
             'description' => $request->description,
             'start_date' => $request->start_date,
             'reminder_time' => $request->reminder_time,
+            'type' => $request->type ?? 'standard',
+            'settings' => $request->settings ?? [],
             'status' => 'active',
         ]);
 
