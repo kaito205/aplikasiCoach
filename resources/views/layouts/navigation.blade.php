@@ -5,15 +5,15 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <img src="{{ asset('assets/img/logo.webp') }}" alt="prototypeCoach" class="block h-6 w-auto"/>
+                    <a href="{{ route('dashboard') }}" class="dark:bg-white dark:rounded-lg dark:p-1 dark:bg-opacity-90 transition">
+                        <img src="{{ asset('assets/img/logo.png') }}" alt="Flow" class="block h-10 w-auto"/>
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                        {{ __('Flow') }}
                     </x-nav-link>
                 </div>
             </div>

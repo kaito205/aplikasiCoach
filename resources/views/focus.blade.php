@@ -54,24 +54,24 @@
                 </svg>
 
                 {{-- Status Text (Motivational) --}}
-                <div id="flower-message" class="absolute -bottom-10 w-full text-center text-sm font-medium text-gray-500 dark:text-gray-400 opacity-0 transition-opacity duration-500">
+                <div id="flower-message" class="absolute -bottom-10 w-full text-center text-sm font-medium text-gray-600 dark:text-gray-400 opacity-0 transition-opacity duration-500">
                     Menunggu benih...
                 </div>
             </div>
 
             {{-- TIMER DISPLAY --}}
             <div class="mb-10">
-                <div id="timer-display" class="text-7xl font-mono font-bold text-gray-800 dark:text-white tabular-nums tracking-tighter transition-colors duration-300">
+                <div id="timer-display" class="text-7xl font-mono font-bold text-gray-900 dark:text-white tabular-nums tracking-tighter transition-colors duration-300">
                     25:00
                 </div>
-                <p class="text-gray-500 dark:text-gray-400 text-sm uppercase tracking-widest mt-2">Waktu Tersisa</p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm uppercase tracking-widest mt-2">Waktu Tersisa</p>
             </div>
 
             {{-- CONTROLS --}}
             <div class="flex flex-col items-center gap-6 relative z-50">
                 
                 {{-- Main Button --}}
-                <button type="button" onclick="toggleFokus()" id="btn-toggle" 
+                <button type="button" onclick="toggleFokus()" id="btn-toggle" style="background-color: #4f46e5;"
                     class="w-20 h-20 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 transform active:scale-95 group">
                     <svg id="icon-play" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 ml-1 group-hover:scale-110 transition-transform">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
@@ -83,13 +83,13 @@
 
                 {{-- Secondary Controls --}}
                 <div class="flex items-center gap-3">
-                    <button type="button" onclick="changeDuration(25)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <button type="button" onclick="changeDuration(25)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         25m
                     </button>
-                    <button type="button" onclick="changeDuration(45)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <button type="button" onclick="changeDuration(45)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         45m
                     </button>
-                    <button type="button" onclick="changeDuration(60)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <button type="button" onclick="changeDuration(60)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         60m
                     </button>
                     <button type="button" onclick="resetFokus()" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition" title="Reset">

@@ -11,7 +11,7 @@
             {{-- JAM REAL-TIME --}}
             <div class="mb-6 text-center">
                 <p class="text-gray-500 dark:text-gray-400 text-sm uppercas tracking-widest">Waktu Sekarang</p>
-                <h2 id="realtime-clock" class="text-3xl font-mono font-bold text-gray-800 dark:text-white mt-1">
+                <h2 id="realtime-clock" class="text-3xl font-mono font-bold text-gray-900 dark:text-white mt-1">
                     --:--:--
                 </h2>
                 <p id="realtime-date" class="text-blue-400 font-medium mt-1">
@@ -21,7 +21,8 @@
 
             {{-- LINK KE MODE FOKUS --}}
             <a href="{{ route('focus') }}" class="block mb-8 group">
-                <div class="p-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg text-white relative overflow-hidden ring-1 ring-white/20 transition-transform transform group-hover:scale-[1.02]">
+                <div class="p-6 rounded-xl shadow-lg relative overflow-hidden ring-1 ring-white/20 transition-transform transform group-hover:scale-[1.02]"
+                     style="background: linear-gradient(to bottom right, #6366f1, #9333ea); color: white;">
                     <!-- Decorative Elements -->
                     <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-xl"></div>
                     <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-black/10 blur-xl"></div>
@@ -192,14 +193,16 @@
                     {{-- SARAN ITERASI --}}
                     @if ($prototype->suggestion)
                         <div class="mt-3 px-3 py-2 rounded text-sm font-semibold 
-                            {{ $prototype->suggestion['type'] == 'upgrade' ? 'bg-blue-600/30 text-blue-200 border border-blue-500/50' : 'bg-orange-600/30 text-orange-200 border border-orange-500/50' }}">
+                            {{ $prototype->suggestion['type'] == 'upgrade' 
+                                ? 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-200 dark:border-blue-500/50' 
+                                : 'bg-orange-100 text-orange-800 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-200 dark:border-orange-500/50' }}">
                             {{ $prototype->suggestion['message'] }}
                         </div>
                     @endif
 
                     {{-- MINGGU INI (MINGGUAN) --}}
-                    <div class="mt-4 pt-4 border-t border-gray-700">
-                        <p class="text-xs text-gray-400 mb-2 uppercase tracking-wide">Minggu Ini</p>
+                    <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">Minggu Ini</p>
                         <div class="flex justify-between items-center text-xs text-center">
                             @foreach ($prototype->weekly_progress as $day)
                                 <div class="flex flex-col items-center gap-1">
@@ -209,13 +212,13 @@
                                     @elseif ($day['status'] == 'failed')
                                         <div class="w-6 h-6 rounded bg-red-500 flex items-center justify-center text-white" title="{{ $day['date'] }}: Gagal">✖</div>
                                     @elseif ($day['status'] == 'future')
-                                        <div class="w-6 h-6 rounded bg-gray-700/50 border border-dashed border-gray-500" title="{{ $day['date'] }}: Belum saatnya"></div>
+                                        <div class="w-6 h-6 rounded bg-gray-100 border border-dashed border-gray-300 dark:bg-gray-700/50 dark:border-gray-500" title="{{ $day['date'] }}: Belum saatnya"></div>
                                     @else
-                                        <div class="w-6 h-6 rounded bg-gray-600" title="{{ $day['date'] }}: Belum diisi"></div>
+                                        <div class="w-6 h-6 rounded bg-gray-200 dark:bg-gray-600" title="{{ $day['date'] }}: Belum diisi"></div>
                                     @endif
 
                                     {{-- Day Name --}}
-                                    <span class="{{ $day['is_today'] ? 'text-yellow-400 font-bold' : 'text-gray-400' }}">
+                                    <span class="{{ $day['is_today'] ? 'text-indigo-600 dark:text-yellow-400 font-bold' : 'text-gray-600 dark:text-gray-400' }}">
                                         {{ substr($day['day_name'], 0, 1) }}
                                     </span>
                                 </div>
