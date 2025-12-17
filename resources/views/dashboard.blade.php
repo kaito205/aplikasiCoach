@@ -94,7 +94,7 @@
                                     @csrf
                                     <input type="hidden" name="prototype_id" value="{{ $prototype->id }}">
                                     <input type="hidden" name="success" value="1">
-                                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition transform active:scale-95">
+                                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition transform active:scale-95" style="background-color: #9333ea; color: white;">
                                         🛌 Tidur Sekarang
                                     </button>
                                 </form>
@@ -113,7 +113,7 @@
                                  </div>
                             @endif
 
-                             <a href="{{ route('focus') }}" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition transform active:scale-95 mt-2">
+                             <a href="{{ route('focus') }}" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition transform active:scale-95 mt-2" style="background-color: #4f46e5; color: white;">
                                  ⏱️ Mulai Fokus
                              </a>
                              
@@ -148,7 +148,7 @@
                                 <form method="POST" action="{{ route('daily-logs.store') }}" class="mt-2">
                                     @csrf
                                     <input type="hidden" name="prototype_id" value="{{ $prototype->id }}">
-                                    <button type="submit" name="success" value="1" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm">
+                                    <button type="submit" name="success" value="1" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm" style="background-color: #22c55e; color: white;">
                                         ✅ Check (Selesai)
                                     </button>
                                 </form>
