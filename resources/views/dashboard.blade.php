@@ -19,47 +19,31 @@
                 </p>
             </div>
 
-            {{-- TIMER BELAJAR / FOKUS --}}
-            <div class="mb-8 p-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg text-white text-center relative overflow-hidden ring-1 ring-white/20">
-                <!-- Decorative Elements -->
-                <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-xl"></div>
-                <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-black/10 blur-xl"></div>
+            {{-- LINK KE MODE FOKUS --}}
+            <a href="{{ route('focus') }}" class="block mb-8 group">
+                <div class="p-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg text-white relative overflow-hidden ring-1 ring-white/20 transition-transform transform group-hover:scale-[1.02]">
+                    <!-- Decorative Elements -->
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-xl"></div>
+                    <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-black/10 blur-xl"></div>
 
-                <h3 class="font-bold text-lg uppercase tracking-wider mb-4 flex items-center justify-center gap-2">
-                    ⏱️ Mode Fokus
-                </h3>
-                
-                <!-- Timer Display -->
-                <div class="text-5xl md:text-6xl font-mono font-bold mb-6 tabular-nums tracking-tighter" id="timer-display">
-                    25:00
+                    <div class="flex items-center justify-between relative z-10">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <span class="text-2xl">⏱️</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl">Mode Fokus</h3>
+                                <p class="text-indigo-100 text-sm">Masuk ke ruang fokus dengan visualisasi tanaman.</p>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 bg-white text-indigo-600 rounded-full flex items-center justify-center shadow-lg group-hover:bg-indigo-50 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Controls -->
-                <div class="flex justify-center gap-4 mb-6 relative z-10">
-                    <button onclick="toggleTimer()" id="btn-start-pause" class="bg-white text-indigo-600 font-bold py-2 px-8 rounded-full hover:bg-gray-100 transition shadow-lg hover:shadow-xl active:scale-95 flex items-center gap-2">
-                        <span id="icon-play">▶</span> <span id="text-start-pause">Mulai</span>
-                    </button>
-                    <button onclick="resetTimer()" class="bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-4 rounded-full transition backdrop-blur-sm active:scale-95 border border-white/10">
-                        🔄 Reset
-                    </button>
-                </div>
-
-                <!-- Presets -->
-                <div class="flex justify-center gap-2 relative z-10 flex-wrap">
-                    <button onclick="setTimer(25)" class="px-4 py-1.5 bg-black/20 hover:bg-black/30 rounded-full text-sm transition border border-white/10 backdrop-blur-md">25 Menit</button>
-                    <button onclick="setTimer(5)" class="px-4 py-1.5 bg-black/20 hover:bg-black/30 rounded-full text-sm transition border border-white/10 backdrop-blur-md">5 Menit</button>
-                    <button onclick="setTimer(60)" class="px-4 py-1.5 bg-black/20 hover:bg-black/30 rounded-full text-sm transition border border-white/10 backdrop-blur-md">60 Menit</button>
-                </div>
-                
-                <!-- Custom Time -->
-                <div class="mt-4 flex justify-center items-center gap-2 relative z-10">
-                    <input type="number" id="custom-minutes" placeholder="Menit" min="1" max="180" 
-                        class="w-20 px-3 py-1 text-sm bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 text-center spin-hide">
-                    <button onclick="setCustomTimer()" class="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition border border-white/10 font-bold">
-                        Set Custom
-                    </button>
-                </div>
-            </div>
+            </a>
 
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-gray-800 dark:text-white font-bold">🔥 Prototipe Aktif</h3>
@@ -348,109 +332,6 @@
         setInterval(updateClock, 1000);
         updateClock(); // Jalan pertama kali
 
-        // --- TIMER FOKUS LOGIC ---
-        let timerInterval;
-        let currentDuration = 25 * 60; // Default 25 menit
-        let timeLeft = currentDuration; 
-        let isTimerRunning = false;
 
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.getElementById('timer-display').innerText = display;
-            
-            // Update Tab Title
-            if (isTimerRunning) {
-                document.title = `(${display}) Mode Fokus`;
-            } else {
-                document.title = "Prototype Coach";
-            }
-        }
-
-        function toggleTimer() {
-            const btn = document.getElementById('btn-start-pause');
-            const icon = document.getElementById('icon-play');
-            const text = document.getElementById('text-start-pause');
-
-            if (isTimerRunning) {
-                // Pause
-                clearInterval(timerInterval);
-                isTimerRunning = false;
-                icon.innerText = "▶";
-                text.innerText = "Lanjut";
-                btn.classList.remove('bg-yellow-400', 'text-yellow-900');
-                btn.classList.add('bg-white', 'text-indigo-600');
-            } else {
-                // Start
-                if (timeLeft <= 0) return;
-                
-                isTimerRunning = true;
-                icon.innerText = "⏸";
-                text.innerText = "Jeda";
-                btn.classList.remove('bg-white', 'text-indigo-600');
-                btn.classList.add('bg-yellow-400', 'text-yellow-900');
-
-                timerInterval = setInterval(() => {
-                    if (timeLeft > 0) {
-                        timeLeft--;
-                        updateTimerDisplay();
-                    } else {
-                        // Timer Selesai
-                        clearInterval(timerInterval);
-                        isTimerRunning = false;
-                        triggerAlarm("Waktu Fokus Selesai!", false);
-                        icon.innerText = "▶";
-                        text.innerText = "Mulai";
-                        btn.classList.remove('bg-yellow-400', 'text-yellow-900');
-                        btn.classList.add('bg-white', 'text-indigo-600');
-                        timeLeft = 0;
-                        updateTimerDisplay();
-                        document.title = "Waktu Habis!";
-                    }
-                }, 1000);
-            }
-        }
-
-        function resetTimer() {
-            clearInterval(timerInterval);
-            isTimerRunning = false;
-            timeLeft = currentDuration;
-            updateTimerDisplay();
-            
-            const btn = document.getElementById('btn-start-pause');
-            document.getElementById('icon-play').innerText = "▶";
-            document.getElementById('text-start-pause').innerText = "Mulai";
-            btn.classList.remove('bg-yellow-400', 'text-yellow-900');
-            btn.classList.add('bg-white', 'text-indigo-600');
-            document.title = "Prototype Coach";
-        }
-
-        function setTimer(minutes) {
-            clearInterval(timerInterval);
-            isTimerRunning = false;
-            currentDuration = minutes * 60;
-            timeLeft = currentDuration;
-            updateTimerDisplay();
-
-            const btn = document.getElementById('btn-start-pause');
-            document.getElementById('icon-play').innerText = "▶";
-            document.getElementById('text-start-pause').innerText = "Mulai";
-            btn.classList.remove('bg-yellow-400', 'text-yellow-900');
-            btn.classList.add('bg-white', 'text-indigo-600');
-            document.title = "Prototype Coach";
-        }
-
-        function setCustomTimer() {
-            const input = document.getElementById('custom-minutes');
-            const minutes = parseInt(input.value);
-            
-            if (minutes && minutes > 0) {
-                setTimer(minutes);
-                input.value = ""; 
-            } else {
-                alert("Masukkan jumlah menit yang valid!");
-            }
-        }
     </script>
 </x-app-layout>

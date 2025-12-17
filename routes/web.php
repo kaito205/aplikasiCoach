@@ -13,6 +13,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])
         ->name('dashboard');
 
+    Route::get('/focus', [DashboardController::class, 'focus'])
+        ->name('focus');
+
     Route::get('/prototypes/create', [PrototypeController::class, 'create'])
         ->name('prototypes.create');
 

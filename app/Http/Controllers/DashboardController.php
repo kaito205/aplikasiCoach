@@ -113,4 +113,10 @@ class DashboardController extends Controller
         return view('dashboard', compact('prototypes'));
     }
 
+
+
+    public function focus()
+    {
+        return view('focus');
+    }
 }
