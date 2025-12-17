@@ -21,11 +21,11 @@
         <div class="z-10 w-full max-w-md text-center">
             
             {{-- FLOWER ANIMATION CONTAINER --}}
-            <div class="relative w-64 h-80 mx-auto mb-8 flex items-end justify-center">
+            <div class="relative w-64 h-80 mx-auto mb-8 flex items-end justify-center pointer-events-none">
                 {{-- Tanah / Pot --}}
                 <div class="absolute bottom-0 w-32 h-4 bg-gray-800/10 dark:bg-white/10 rounded-full blur-sm"></div>
                 
-                <svg id="flower-svg" width="200" height="300" viewBox="0 0 200 300" class="drop-shadow-xl" style="overflow: visible;">
+                <svg id="flower-svg" width="200" height="300" viewBox="0 0 200 300" class="drop-shadow-xl pointer-events-none" style="overflow: visible;">
                     <!-- Stem (Batang) -->
                     <!-- Path: Start bottom-center (100, 300), curve up to (100, 100) -->
                     <path id="stem" d="M100 300 Q100 200 100 100" 
@@ -68,10 +68,10 @@
             </div>
 
             {{-- CONTROLS --}}
-            <div class="flex flex-col items-center gap-6">
+            <div class="flex flex-col items-center gap-6 relative z-50">
                 
                 {{-- Main Button --}}
-                <button onclick="toggleFokus()" id="btn-toggle" 
+                <button type="button" onclick="toggleFokus()" id="btn-toggle" 
                     class="w-20 h-20 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 transform active:scale-95 group">
                     <svg id="icon-play" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 ml-1 group-hover:scale-110 transition-transform">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
@@ -83,19 +83,29 @@
 
                 {{-- Secondary Controls --}}
                 <div class="flex items-center gap-3">
-                    <button onclick="changeDuration(25)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <button type="button" onclick="changeDuration(25)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         25m
                     </button>
-                    <button onclick="changeDuration(45)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <button type="button" onclick="changeDuration(45)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         45m
                     </button>
-                    <button onclick="changeDuration(60)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <button type="button" onclick="changeDuration(60)" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         60m
                     </button>
-                    <button onclick="resetFokus()" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition" title="Reset">
+                    <button type="button" onclick="resetFokus()" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition" title="Reset">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                         </svg>
+                    </button>
+                </div>
+
+                {{-- Custom Input --}}
+                <div class="flex items-center gap-2">
+                     <input type="number" id="custom-min" placeholder="Menit" min="1" max="180" 
+                        onkeypress="if(event.key === 'Enter') setCustomDuration()"
+                        class="w-24 px-3 py-2 text-center rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm placeholder-gray-400">
+                    <button type="button" onclick="setCustomDuration()" class="px-3 py-2 rounded-lg bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-sm font-medium transition shadow-sm">
+                        Set
                     </button>
                 </div>
             </div>
@@ -260,6 +270,17 @@
         function changeDuration(minutes) {
             duration = minutes * 60;
             resetFokus();
+        }
+
+        function setCustomDuration() {
+            const input = document.getElementById('custom-min');
+            const val = parseInt(input.value);
+            if (val && val > 0) {
+                changeDuration(val);
+                input.value = '';
+            } else {
+                alert('Mohon masukkan jumlah menit yang valid (contoh: 25)');
+            }
         }
 
         // Initialize Display
